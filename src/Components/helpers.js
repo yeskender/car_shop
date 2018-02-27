@@ -9,13 +9,21 @@ let helpers = (function () {
 
   function newTimer(attrs = {}) {
     const timer = {
-      title: attrs.title || 'Timer',
-      project: attrs.project || 'Project',
+      title: attrs.title || 'Type',
+      project: attrs.project || 'Cost',
+      imgPath: attrs.imgPath || 'Image',
       id: guid(),
-      elapsed: 0,
-      runningSince: null
     };
     return timer;
+  }
+
+  function newUser(attrs = {}) {
+    const user = {
+      name: attrs.name || 'Name',
+      password: attrs.password || 'Password',
+      id: guid(),
+    };
+    return user;
   }
 
   function findById(array, id, cb) {
@@ -58,6 +66,7 @@ let helpers = (function () {
   return {
     millisecondsToHuman,
     newTimer,
+    newUser,
     findById,
     renderElapsedString,
     guid,

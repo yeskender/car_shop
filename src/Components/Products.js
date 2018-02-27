@@ -10,15 +10,16 @@ class TimersDashboard extends React.Component {
     this.state = {
       timers: [
         {
-          project: "Test project 1",title: "Test title 1", 
-          id: helpers.guid(), elapsed: 5456099, runningSince: Date.now(),
+          title: "Lexus ES",
+          project: "$38,950", 
+          id: helpers.guid(), 
+          imgPath: "http://www.lexus.com/cm-img/header_images/es.png"
         }, {
-          title: "Test title 2",
-          project: "Test project ",
+          title: "Lexus LS",
+          project: "$75,000",
           id: helpers.guid(),
-          elapsed: 1273998,
-          runningSince: null,
-        }
+          imgPath: "http://www.lexus.com/cm-img/header_images/ls.png"
+        },
       ],
     };
   }
@@ -74,6 +75,7 @@ class TimersDashboard extends React.Component {
         return Object.assign({}, timer, {
           title: newTimer.title,
           project: newTimer.project,
+          imgPath: newTimer.imgPath
         });
       } else {
         return timer;
@@ -96,7 +98,6 @@ class TimersDashboard extends React.Component {
             onStartClick={this.handleStartClick}
             onFormSubmit={this.handleEditFormSubmit}
             onTrashClick={this.handleTrashClick}
-             
           />
           <ToggleableTimerForm 
             onFormSubmit={this.handleCreateFormSubmit} 
@@ -118,15 +119,13 @@ class EditableTimerList extends React.Component {
         id={timer.id}
         title={timer.title}
         project={timer.project}
-        elapsed={timer.elapsed}
-        runningSince={timer.runningSince}
+        imgPath={timer.imgPath}
         onStartClick={this.props.onStartClick}
         onFormSubmit={this.props.onFormSubmit}
         onTrashClick = {this.props.onTrashClick}
-
-        
       />
-    ));//a
+    ));
+
     return (
       <div id='timers'>
         {timers}
@@ -162,7 +161,7 @@ class EditableTimer extends React.Component {
     })
   };
 
-    handleFormClose = () => {
+  handleFormClose = () => {
     this.closeForm();
   };
 
@@ -181,22 +180,19 @@ class EditableTimer extends React.Component {
           project={this.props.project}
           onFormSubmit={this.handleSubmit}
           onFormClose={this.handleFormClose}
+          imgPath={this.props.imgPath}
         />
       );
-      //a
     } else {
       return (
         <Timer
-          
           id={this.props.id}
           title={this.props.title}
           project={this.props.project}
-          elapsed={this.props.elapsed}
-          runningSince={this.props.runningSince}
           onStartClick={this.props.onStartClick}
           onEditClick={this.handleEditClick}
           onTrashClick = {this.props.onTrashClick}
-
+          imgPath={this.props.imgPath}
         />
       );
     }
@@ -213,6 +209,7 @@ class TimerForm extends React.Component {
     this.state = {
       title: this.props.title || '',
       project: this.props.project || '',
+      imgPath: this.props.imgPath || '',
     }
   }
 
@@ -227,12 +224,19 @@ class TimerForm extends React.Component {
       project: e.target.value
     });
   };
+  
+  handleImageChange = (e) => {
+    this.setState({
+      imgPath: e.target.value
+    });
+  };
 
   handleSubmit = () => {
     this.props.onFormSubmit({
       id: this.props.id,
       title: this.state.title,
-      project: this.state.project
+      project: this.state.project,
+      imgPath: this.state.imgPath
     });
   };
 
@@ -243,7 +247,7 @@ class TimerForm extends React.Component {
         <div className='content'>
           <div className='ui form'>
             <div className='field'>
-              <label>Title</label>
+              <label>Type</label>
               <input 
                 type='text' 
                 value={this.state.title} 
@@ -251,11 +255,19 @@ class TimerForm extends React.Component {
               />
             </div>
             <div className='field'>
-              <label>Project</label>
+              <label>Cost</label>
               <input 
                 type='text' 
                 value={this.state.project}
                 onChange={this.handleProjectChange}
+              />
+            </div>
+            <div className='field'>
+              <label>Image link</label>
+              <input 
+                type='text' 
+                value={this.state.imgPath}
+                onChange={this.handleImageChange}
               />
             </div>
             <div className='ui two bottom attached buttons'>
@@ -360,7 +372,7 @@ class Timer extends React.Component {
 	      <div className='header'>{this.props.title}</div>
 	      <div className='meta'>{this.props.project}</div>
 	      <div className='center aligned description'>
-	        <h2>{elapsedString}</h2>
+	        <img className="ui medium image" src={this.props.imgPath} alt=''/>
 	      </div>
 
 	      <div className='extra content'>
@@ -373,7 +385,7 @@ class Timer extends React.Component {
 	      </div>
 	    </div>      
 	    <button className='ui bottom attached blue basic button' onClick={this.startClick}>
-	      {this.props.runningSince ? "Stop" : "Start"}
+	      {this.props.runningSince ? "Remove" : "Add"}
 	    </button>
 	  </div>
 	);
