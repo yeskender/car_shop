@@ -1,141 +1,34 @@
 import React from 'react';
 import helpers from './helpers';
+import { Dropdown } from 'semantic-ui-react'
+import {
+    BrowserRouter as Router,
+    Route,
+} from 'react-router-dom'
 
-//onClick={() => this.changeCheck(data.id)}
-class TimersDashboard extends React.Component {
-
-  constructor(props){
-    super(props);
-
-    this.state = {
-      timers: [
-        {
-          title: "Lexus ES",
-          project: "$38,950", 
-          id: helpers.guid(), 
-          imgPath: "http://www.lexus.com/cm-img/header_images/es.png"
-        }, {
-          title: "Lexus LS",
-          project: "$75,000",
-          id: helpers.guid(),
-          imgPath: "http://www.lexus.com/cm-img/header_images/ls.png"
-        },
-      ],
-    };
-  }
-
-  handleTrashClick = (timerId) => {
-    this.setState({
-      timers: this.state.timers.filter(timer => timer.id !== timerId),
-    });
-  }
-
-  handleStartClick = (timerId) =>{
-
-    let time = this.state.timers.slice();
-    for(let i = 0;i < time.length;i++){
-      if(time[i].id === timerId){
-        if(time[i].runningSince === null ){
-          time[i].runningSince = Date.now();
-        }
-        else{
-          alert(helpers.renderElapsedString(time[i].elapsed, time[i].runningSince));
-          time[i].elapsed += (Date.now() - time[i].runningSince); 
-          time[i].runningSince = null;
-          
-        }
-        
-      }
-    }
-    //t[timerId].runningSince = Date.now();
-    this.setState({timers:time});
-  }
-
-  handleCreateFormSubmit = (timer) => {
-    this.createTimer(timer);
-  };
-
-
-  createTimer = (timer) => {
-    const t = helpers.newTimer(timer);
-    this.setState({
-      timers: this.state.timers.concat(t),
-    });
-  };
-
-  handleEditFormSubmit = (timer) => {
-    this.updateTimer(timer)
-  };
-
-
-  updateTimer = (newTimer) => {
-  
-    const newArr = this.state.timers.map((timer) => {
-      if (timer.id === newTimer.id) {
-        return Object.assign({}, timer, {
-          title: newTimer.title,
-          project: newTimer.project,
-          imgPath: newTimer.imgPath
-        });
-      } else {
-        return timer;
-      }
-    });
-    
-    this.setState({
-      timers: newArr,
-    });    
-  };
-
-
+class EditableCar extends React.Component {
 
   render() {
-    return (
-      <div className='ui three column centered grid'>
-        <div className='column'>
-          <EditableTimerList 
-            timers={this.state.timers}
-            onStartClick={this.handleStartClick}
-            onFormSubmit={this.handleEditFormSubmit}
-            onTrashClick={this.handleTrashClick}
-          />
-          <ToggleableTimerForm 
-            onFormSubmit={this.handleCreateFormSubmit} 
-          />
-            
-        </div>
-      </div>
-    );
-  }
-}
-
-class EditableTimerList extends React.Component {
-
-  
-  render() {
-    const timers = this.props.timers.map((timer) => (
-      <EditableTimer
-        key={timer.id}
-        id={timer.id}
-        title={timer.title}
-        project={timer.project}
-        imgPath={timer.imgPath}
-        onStartClick={this.props.onStartClick}
+    const cars = this.props.cars.map((car) => (
+      <Editable
+        key={car.id}
+        id={car.id}
+        title={car.title}
+        project={car.project}
+        imgPath={car.imgPath}
         onFormSubmit={this.props.onFormSubmit}
         onTrashClick = {this.props.onTrashClick}
       />
     ));
 
     return (
-      <div id='timers'>
-        {timers}
+      <div id='cars'>
+        {cars}
       </div>
     );
   }
 }
-
-//a
-class EditableTimer extends React.Component {
+class Editable extends React.Component {
 
   constructor(props){
     super(props);
@@ -193,6 +86,8 @@ class EditableTimer extends React.Component {
           onEditClick={this.handleEditClick}
           onTrashClick = {this.props.onTrashClick}
           imgPath={this.props.imgPath}
+          onAddToShoppingList={this.props.onAddToShoppingList}
+          shoppingList={this.props.shoppingList}
         />
       );
     }
@@ -239,15 +134,19 @@ class TimerForm extends React.Component {
       imgPath: this.state.imgPath
     });
   };
-
+  
+  
   render() {
+
+    const options = ["EUR", "RUB"]
+    
     const submitText = this.props.id ? 'Update' : 'Create';
     return (
       <div className='ui centered card'>
         <div className='content'>
           <div className='ui form'>
             <div className='field'>
-              <label>Type</label>
+              <label>Type of Car</label>
               <input 
                 type='text' 
                 value={this.state.title} 
@@ -327,7 +226,7 @@ class ToggleableTimerForm extends React.Component {
         <TimerForm
           onFormSubmit={this.handleFormSubmit}
           onFormClose={this.handleFormClose}
-         />
+        />
       );
       //a
     } else {
@@ -364,35 +263,34 @@ class Timer extends React.Component {
     this.props.onTrashClick(this.props.id);
   };
 
-	render() {
-	const elapsedString = helpers.renderElapsedString(this.props.elapsed, this.props.runningSince);
-	return (
-	  <div className='ui centered card'>
-	    <div className='content'>
-	      <div className='header'>{this.props.title}</div>
-	      <div className='meta'>{this.props.project}</div>
-	      <div className='center aligned description'>
-	        <img className="ui medium image" src={this.props.imgPath} alt=''/>
-	      </div>
+  render() {
+  const elapsedString = helpers.renderElapsedString(this.props.elapsed, this.props.runningSince);
+  
+  return (
+    
+    <div className='ui centered card'>
+        <div className='content'>
+          <div className='header'>{this.props.title}</div>
+          <div className='meta'>{this.props.project}</div>
+          <div className='center aligned description'>
+            <img className="ui medium image" src={this.props.imgPath} alt=''/>
+          </div>
 
-	      <div className='extra content'>
-	        <span className='right floated edit icon' onClick={this.props.onEditClick}>
-	          <i className='edit icon' />
-	        </span>
-	        <span className='right floated trash icon' onClick={this.TrashClick}>
-	          <i className='trash icon' />
-	        </span>
-	      </div>
-	    </div>      
-	    <button className='ui bottom attached blue basic button' onClick={this.startClick}>
-	      {this.props.runningSince ? "Remove" : "Add"}
-	    </button>
-	  </div>
-	);
-	}
+          <div className='extra content'>
+            <span className='right floated edit icon' onClick={this.props.onEditClick}>
+              <i className='edit icon' />
+            </span>
+            <span className='right floated trash icon' onClick={this.TrashClick}>
+              <i className='trash icon' />
+            </span>
+          </div>
+          
+        </div> 
+        <button className='ui bottom attached blue basic button' onClick={this.startClick}>
+            {this.props.runningSince ? "Remove" : "Add"}
+          </button>
+      </div>
+  );
+  }
 }
-
-
-
-export default TimersDashboard;
-
+export default EditableCar;
